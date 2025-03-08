@@ -87,7 +87,7 @@ def generate_stream_response(messages, temperature, top_p, max_tokens):
                     'id': f'chatcmpl-{int(time.time())}',
                     'object': 'chat.completion.chunk',
                     'created': int(time.time()),
-                    'model': 'minimind',
+                    'model': 'meuai',
                     'choices': [{'index': 0, 'delta': {'content': delta}, 'finish_reason': None}]
                 }
                 yield f"data: {json.dumps(json_data)}\n\n"
@@ -133,7 +133,7 @@ async def chat_completions(request: ChatRequest):
                 "id": f"chatcmpl-{int(time.time())}",
                 "object": "chat.completion",
                 "created": int(time.time()),
-                "model": "minimind",
+                "model": "meuai",
                 "choices": [
                     {
                         "index": 0,
@@ -148,7 +148,7 @@ async def chat_completions(request: ChatRequest):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Server for MiniMind")
+    parser = argparse.ArgumentParser(description="Server for MeuAI")
     parser.add_argument('--out_dir', default='out', type=str)
     parser.add_argument('--lora_name', default='None', type=str)
     parser.add_argument('--dim', default=512, type=int)

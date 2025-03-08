@@ -18,6 +18,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from model.model import MiniMindLM
 from model.LMConfig import LMConfig
 from model.dataset import DPODataset
+import os
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
 
 warnings.filterwarnings('ignore')
 
@@ -163,19 +165,20 @@ def init_distributed_mode():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="MiniMind RLHF")
+    parser = argparse.ArgumentParser(description="MeuAI RLHF")
     parser.add_argument("--out_dir", type=str, default="out")
+    parser.add_argument('--deepspeed', type=str, default=None, help='Path to DeepSpeed config file')
     parser.add_argument("--epochs", type=int, default=2)
-    parser.add_argument("--batch_size", type=int, default=8)
+    parser.add_argument("--batch_size", type=int, default=4)
     # sft阶段学习率为 「5e-6」->「5e-7」长度512，建议离线正负样本「概率」偏好对齐阶段lr <=「1e-8」长度3000，否则很容易遗忘训坏
     parser.add_argument("--learning_rate", type=float, default=1e-8)
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--dtype", type=str, default="bfloat16")
     parser.add_argument("--use_wandb", action="store_true")
-    parser.add_argument("--wandb_project", type=str, default="MiniMind-RLHF-SFT")
+    parser.add_argument("--wandb_project", type=str, default="MeuAI-RLHF-SFT")
     parser.add_argument("--num_workers", type=int, default=1)
     parser.add_argument("--ddp", action="store_true")
-    parser.add_argument("--accumulation_steps", type=int, default=1)
+    parser.add_argument("--accumulation_steps", type=int, default=4)
     parser.add_argument("--grad_clip", type=float, default=1.0)
     parser.add_argument("--warmup_iters", type=int, default=0)
     parser.add_argument("--log_interval", type=int, default=100)
@@ -197,7 +200,7 @@ if __name__ == "__main__":
     torch.manual_seed(1337)
     device_type = "cuda" if "cuda" in args.device else "cpu"
 
-    args.wandb_run_name = f"MiniMind-Full-DPO-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
+    args.wandb_run_name = f"MeuAI-Full-DPO-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
 
     ctx = nullcontext() if device_type == "cpu" else torch.cuda.amp.autocast()
     ddp = int(os.environ.get("RANK", -1)) != -1  # is this a ddp run?

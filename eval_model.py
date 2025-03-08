@@ -17,7 +17,9 @@ def init_model(args):
     if args.load == 0:
         moe_path = '_moe' if args.use_moe else ''
         modes = {0: 'pretrain', 1: 'full_sft', 2: 'rlhf', 3: 'reason'}
-        ckp = f'./{args.out_dir}/{modes[args.model_mode]}_{args.dim}{moe_path}.pth'
+        # ckp = f'./{args.out_dir}/{modes[args.model_mode]}_{args.dim}{moe_path}.pth'
+        ckp = f'./out/merged_model.pth'
+        
 
         model = MiniMindLM(LMConfig(
             dim=args.dim,
@@ -102,7 +104,7 @@ def setup_seed(seed):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Chat with MiniMind")
+    parser = argparse.ArgumentParser(description="Chat with MeuAI")
     parser.add_argument('--lora_name', default='None', type=str)
     parser.add_argument('--out_dir', default='out', type=str)
     parser.add_argument('--temperature', default=0.85, type=float)

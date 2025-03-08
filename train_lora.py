@@ -88,7 +88,8 @@ def init_model(lm_config):
     tokenizer = AutoTokenizer.from_pretrained('./model/minimind_tokenizer')
     model = MiniMindLM(lm_config)
     moe_path = '_moe' if lm_config.use_moe else ''
-    ckp = f'./out/rlhf_{lm_config.dim}{moe_path}.pth'
+    # ckp = f'./out/rlhf_{lm_config.dim}{moe_path}.pth'
+    ckp = f'./out/reason_512.pth'
     state_dict = torch.load(ckp, map_location=args.device)
     model.load_state_dict(state_dict, strict=False)
     return model.to(args.device), tokenizer
@@ -107,15 +108,16 @@ def init_distributed_mode():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="MiniMind SFT with LoRA")
+    parser = argparse.ArgumentParser(description="MeuAI SFT with LoRA")
     parser.add_argument("--out_dir", type=str, default="out")
-    parser.add_argument("--epochs", type=int, default=50)
+    parser.add_argument('--deepspeed', type=str, default=None, help='Path to DeepSpeed config file')
+    parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--learning_rate", type=float, default=5e-5)
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--dtype", type=str, default="bfloat16")
     parser.add_argument("--use_wandb", action="store_true")
-    parser.add_argument("--wandb_project", type=str, default="MiniMind-LoRA-SFT")
+    parser.add_argument("--wandb_project", type=str, default="MeuAI-LoRA-SFT")
     parser.add_argument("--num_workers", type=int, default=1)
     parser.add_argument("--ddp", action="store_true")
     parser.add_argument("--accumulation_steps", type=int, default=1)
@@ -147,7 +149,7 @@ if __name__ == "__main__":
         init_distributed_mode()
         args.device = torch.device(DEVICE)
 
-    args.wandb_run_name = f"MiniMind-Lora-SFT-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
+    args.wandb_run_name = f"MeuAI-Lora-SFT-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
     if args.use_wandb and (not ddp or ddp_local_rank == 0):
         import wandb
 

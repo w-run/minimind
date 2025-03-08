@@ -1,9 +1,10 @@
+# model/LMConfig.py
 from transformers import PretrainedConfig
 from typing import List
 
 
 class LMConfig(PretrainedConfig):
-    model_type = "minimind"
+    model_type = "meuai"
 
     def __init__(
             self,
